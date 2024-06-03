@@ -575,7 +575,7 @@ private:
 
 	int _save_external_resources();
 
-	void _set_current_scene(int p_idx);
+	void set_current_scene(int p_idx);
 	void _set_current_scene_nocheck(int p_idx);
 	bool _validate_scene_recursive(const String &p_filename, Node *p_node);
 	void _save_scene(String p_file, int idx = -1);

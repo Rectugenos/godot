@@ -1169,7 +1169,7 @@ void EditorNode::_reload_modified_scenes() {
 		}
 	}
 
-	_set_current_scene(current_idx);
+	set_current_scene(current_idx);
 	scene_tabs->update_scene_tabs();
 	disk_changed->hide();
 }
@@ -3702,7 +3702,7 @@ void EditorNode::_remove_edited_scene(bool p_change_tab) {
 	}
 
 	if (p_change_tab) {
-		_set_current_scene(new_index);
+		set_current_scene(new_index);
 	}
 	editor_data.remove_scene(old_index);
 	_update_title();
@@ -3926,7 +3926,7 @@ void EditorNode::fix_dependencies(const String &p_for_file) {
 
 int EditorNode::new_scene() {
 	int idx = editor_data.add_edited_scene(-1);
-	_set_current_scene(idx); // Before trying to remove an empty scene, set the current tab index to the newly added tab index.
+	set_current_scene(idx); // Before trying to remove an empty scene, set the current tab index to the newly added tab index.
 
 	// Remove placeholder empty scene.
 	if (editor_data.get_edited_scene_count() > 1) {
@@ -3953,7 +3953,7 @@ Error EditorNode::load_scene(const String &p_scene, bool p_ignore_broken_deps, b
 	if (!p_set_inherited) {
 		for (int i = 0; i < editor_data.get_edited_scene_count(); i++) {
 			if (editor_data.get_scene_path(i) == p_scene) {
-				_set_current_scene(i);
+				set_current_scene(i);
 				return OK;
 			}
 		}
@@ -3988,7 +3988,7 @@ Error EditorNode::load_scene(const String &p_scene, bool p_ignore_broken_deps, b
 		if (p_silent_change_tab) {
 			_set_current_scene_nocheck(idx);
 		} else {
-			_set_current_scene(idx);
+			set_current_scene(idx);
 		}
 	} else {
 		EditorUndoRedoManager::get_singleton()->clear_history(false, editor_data.get_current_edited_scene_history_id());
@@ -4009,7 +4009,7 @@ Error EditorNode::load_scene(const String &p_scene, bool p_ignore_broken_deps, b
 		opening_prev = false;
 
 		if (prev != -1 && prev != idx) {
-			_set_current_scene(prev);
+			set_current_scene(prev);
 			editor_data.remove_scene(idx);
 		}
 		return ERR_FILE_MISSING_DEPENDENCIES;
@@ -4020,7 +4020,7 @@ Error EditorNode::load_scene(const String &p_scene, bool p_ignore_broken_deps, b
 		opening_prev = false;
 
 		if (prev != -1 && prev != idx) {
-			_set_current_scene(prev);
+			set_current_scene(prev);
 			editor_data.remove_scene(idx);
 		}
 		return ERR_FILE_NOT_FOUND;
@@ -4056,7 +4056,7 @@ Error EditorNode::load_scene(const String &p_scene, bool p_ignore_broken_deps, b
 		_dialog_display_load_error(lpath, ERR_FILE_CORRUPT);
 		opening_prev = false;
 		if (prev != -1 && prev != idx) {
-			_set_current_scene(prev);
+			set_current_scene(prev);
 			editor_data.remove_scene(idx);
 		}
 		return ERR_FILE_CORRUPT;
@@ -5228,7 +5228,7 @@ void EditorNode::_load_open_scenes_from_config(Ref<ConfigFile> p_layout) {
 		String current_scene = p_layout->get_value(EDITOR_NODE_CONFIG_SECTION, "current_scene");
 		int current_scene_idx = scenes.find(current_scene);
 		if (current_scene_idx >= 0) {
-			_set_current_scene(current_scene_idx);
+			set_current_scene(current_scene_idx);
 		}
 	}
 
@@ -5462,7 +5462,7 @@ void EditorNode::_scene_tab_closed(int p_tab) {
 
 	if (!unsaved_message.is_empty()) {
 		if (scene_tabs->get_current_tab() != p_tab) {
-			_set_current_scene(p_tab);
+			set_current_scene(p_tab);
 		}
 
 		save_confirmation->set_ok_button_text(TTR("Save & Close"));
@@ -6796,7 +6796,7 @@ EditorNode::EditorNode() {
 
 	scene_tabs = memnew(EditorSceneTabs);
 	srt->add_child(scene_tabs);
-	scene_tabs->connect("tab_changed", callable_mp(this, &EditorNode::_set_current_scene));
+	scene_tabs->connect("tab_changed", callable_mp(this, &EditorNode::set_current_scene));
 	scene_tabs->connect("tab_closed", callable_mp(this, &EditorNode::_scene_tab_closed));
 
 	distraction_free = memnew(Button);
