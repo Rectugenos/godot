@@ -120,6 +120,7 @@ public:
 		NodePath live_edit_root;
 		int history_id = 0;
 		uint64_t last_checked_version = 0;
+		HashSet<NodePath> inherited_nodes;
 	};
 
 private:
@@ -202,11 +203,11 @@ public:
 	void set_edited_scene(int p_idx);
 	void set_edited_scene_root(Node *p_root);
 	int get_edited_scene() const;
-	int get_edited_scene_from_path(const String &p_path) const;
 	Node *get_edited_scene_root(int p_idx = -1);
 	int get_edited_scene_count() const;
 	Vector<EditedScene> get_edited_scenes() const;
-
+	void update_edited_scene_inherited_nodes(int p_edited_scene);
+	void clear_edited_scene_inherited_nodes(int p_edited_scene);
 	String get_scene_title(int p_idx, bool p_always_strip_extension = false) const;
 	String get_scene_path(int p_idx) const;
 	String get_scene_type(int p_idx) const;
@@ -219,7 +220,6 @@ public:
 	NodePath get_edited_scene_live_edit_root();
 	bool check_and_update_scene(int p_idx);
 	void move_edited_scene_to_index(int p_idx);
-
 	bool call_build();
 
 	void set_scene_as_saved(int p_idx);
@@ -236,7 +236,6 @@ public:
 	Dictionary restore_edited_scene_state(EditorSelection *p_selection, EditorSelectionHistory *p_history);
 	void notify_edited_scene_changed();
 	void notify_resource_saved(const Ref<Resource> &p_resource);
-	void notify_scene_saved(const String &p_path);
 
 	bool script_class_is_parent(const String &p_class, const String &p_inherits);
 	StringName script_class_get_base(const String &p_class) const;

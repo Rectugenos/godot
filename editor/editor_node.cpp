@@ -1833,6 +1833,24 @@ void EditorNode::_save_scene(String p_file, int idx) {
 
 	_save_editor_states(p_file, idx);
 
+	//tell (sub)inherited edited scenes to keep track of nodes inherited
+	//the states are still in their old versions, this allows for knowing which nodes were deleted when updating an inherited scene
+	for (int i = 0; i < editor_data.get_edited_scene_count(); i++) {
+		//only update for edited scenes that has just been reloaded to avoid issues when saving more than once
+		if (editor_data.get_edited_scenes()[i].inherited_nodes.size() > 0) {
+			continue;
+		}
+		Ref<SceneState> ss = editor_data.get_edited_scene_root(i)->get_scene_inherited_state();
+		//update for edited scenes that inherit the saved scene
+		while (ss.is_valid()) {
+			if (ss->get_path() == p_file) {
+				editor_data.update_edited_scene_inherited_nodes(i);
+				break;
+			}
+			ss = ss->get_base_scene_state();
+		}
+	}
+
 	Ref<PackedScene> sdata;
 
 	if (ResourceCache::has(p_file)) {
@@ -3813,9 +3831,11 @@ bool EditorNode::is_changing_scene() const {
 	return changing_scene;
 }
 
-void EditorNode::_set_current_scene(int p_idx) {
-	if (p_idx == editor_data.get_edited_scene()) {
-		return; // Pointless.
+void EditorNode::set_current_scene(int p_idx) {
+	HashSet<String> checked_scenes;
+	// Save the folding in case the scene gets reloaded.
+	if (editor_data.get_scene_path(p_idx) != "" && editor_data.get_edited_scene_root(p_idx)) {
+		editor_folding.save_scene_folding(editor_data.get_edited_scene_root(p_idx), editor_data.get_scene_path(p_idx));
 	}
 
 	_set_current_scene_nocheck(p_idx);
